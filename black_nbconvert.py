@@ -17,7 +17,12 @@ from black import (
     DEFAULT_LINE_LENGTH,
 )
 
-from _version import version as __version__
+from pkg_resources import get_distribution, DistributionNotFound
+
+try:
+    __version__ = get_distribution(__name__).version
+except DistributionNotFound:
+    __version__ = None
 
 
 class BlackPreprocessor(Preprocessor):
@@ -30,11 +35,12 @@ class BlackPreprocessor(Preprocessor):
             src = cell.get("source", "")
             if len(src.strip()):
                 try:
-                    cell["source"] = format_str(src, mode=self.mode)
+                    cell["source"] = format_str(src, mode=self.mode).strip()
                 except InvalidInput:
                     pass
-                if cell["source"][-1] == "\n" and src[-1] != "\n":
-                    cell["source"] = cell["source"][:-1]
+                if src.strip()[-1] == ";":
+                    cell["source"] += ";"
+
         return cell, resources
 
 

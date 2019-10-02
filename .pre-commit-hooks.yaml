@@ -1,0 +1,8 @@
+-   id: black_nbconvert
+    name: black_nbconvert
+    description: 'Apply black to ipynb files'
+    entry: black_nbconvert
+    language: python
+    language_version: python3
+    require_serial: true
+    files: '\.ipynb$'

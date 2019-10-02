@@ -15,10 +15,7 @@ def get_long_description() -> str:
 
 setup(
     name="black_nbconvert",
-    use_scm_version={
-        "write_to": "_version.py",
-        "write_to_template": 'version = "{version}"\n',
-    },
+    use_scm_version=True,
     description="Apply black to ipynb files",
     long_description=get_long_description(),
     long_description_content_type="text/markdown",
