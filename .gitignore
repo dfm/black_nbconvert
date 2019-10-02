@@ -1,0 +1,5 @@
+_version.py
+dist
+*.egg-info
+build
+.eggs
