@@ -107,15 +107,18 @@ def main():
 
     check = args.check
 
+    exclude_re = re.compile(r"/(\.ipynb_checkpoints)/")
     filenames = []
-    if args.root is not None:
-        exclude_re = re.compile(r"/(\.ipynb_checkpoints)/")
-        filenames = list(
-            str(fn)
-            for fn in Path(os.path.abspath(args.root)).glob("**/*.ipynb")
-            if not exclude_re.search(str(fn))
-        )
-    filenames += args.filenames
+    for fn in args.filenames:
+        path = Path(os.path.abspath(fn))
+        if path.is_dir():
+            filenames += list(
+                str(fn)
+                for fn in path.glob("**/*.ipynb")
+                if not exclude_re.search(str(fn))
+            )
+        else:
+            filenames.append(str(path))
 
     count = format_some(tuple(filenames), check=check)
     if count > 0:
