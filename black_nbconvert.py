@@ -4,6 +4,7 @@
 __all__ = ["__version__", "BlackPreprocessor"]
 
 import os
+import sys
 from pathlib import Path
 
 import toml
@@ -30,6 +31,10 @@ class BlackPreprocessor(Preprocessor):
         self.mode = FileMode(*args, **kwargs)
         super(BlackPreprocessor, self).__init__()
 
+    def preprocess(self, *args, **kwargs):
+        self.count = 0
+        return super(BlackPreprocessor, self).preprocess(*args, **kwargs)
+
     def preprocess_cell(self, cell, resources, index):
         if cell.get("cell_type", None) == "code":
             src = cell.get("source", "")
@@ -40,22 +45,27 @@ class BlackPreprocessor(Preprocessor):
                     pass
                 if src.strip()[-1] == ";":
                     cell["source"] += ";"
+                if src != cell["source"]:
+                    self.count += 1
 
         return cell, resources
 
 
-def format_one(proc, filename):
+def format_one(proc, filename, check=False):
     with open(filename) as f:
         notebook = nbformat.read(f, as_version=4)
     proc.preprocess(
         notebook,
         {"metadata": {"path": os.path.dirname(os.path.abspath(filename))}},
     )
-    with open(filename, mode="wt") as f:
-        nbformat.write(notebook, f)
+    if not check:
+        with open(filename, mode="wt") as f:
+            nbformat.write(notebook, f)
+    return proc.count > 0
 
 
 def format_some(filenames, **config):
+    check = config.get("check", False)
     root = find_project_root(filenames)
     path = root / "pyproject.toml"
     if path.is_file():
@@ -72,8 +82,17 @@ def format_some(filenames, **config):
         ),
     )
 
+    count = 0
     for filename in filenames:
-        format_one(proc, filename)
+        changed = format_one(proc, filename, check=check)
+        if changed:
+            count += 1
+            if check:
+                print("Invalid format: {0}".format(filename))
+            else:
+                print("Formatted: {0}".format(filename))
+
+    return count
 
 
 def main():
@@ -83,7 +102,10 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("filenames", nargs="+")
     parser.add_argument("--root", default=None)
+    parser.add_argument("--check", action="store_true")
     args = parser.parse_args()
+
+    check = args.check
 
     filenames = []
     if args.root is not None:
@@ -95,8 +117,16 @@ def main():
         )
     filenames += args.filenames
 
-    format_some(tuple(filenames))
+    count = format_some(tuple(filenames), check=check)
+    if count > 0:
+        if check:
+            print("{0} notebook(s) would be formatted".format(count))
+        else:
+            print("Formatted {0} notebook(s)".format(count))
+    if check:
+        return count
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
