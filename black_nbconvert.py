@@ -99,10 +99,17 @@ def main():
     import re
     import argparse
 
-    parser = argparse.ArgumentParser()
-    parser.add_argument("filenames", nargs="+")
-    parser.add_argument("--root", default=None)
-    parser.add_argument("--check", action="store_true")
+    parser = argparse.ArgumentParser(
+        description="Format Jupyter notebooks using black"
+    )
+    parser.add_argument(
+        "filenames", nargs="+", help="files or directories to format"
+    )
+    parser.add_argument(
+        "--check",
+        action="store_true",
+        help="just check the formatting, don't overwrite",
+    )
     args = parser.parse_args()
 
     check = args.check
