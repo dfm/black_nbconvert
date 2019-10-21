@@ -46,7 +46,7 @@ Once you [have it installed](https://pre-commit.com/#install), add this to the `
 ```yaml
 repos:        
 - repo: https://github.com/dfm/black_nbconvert
-  rev: stable
+  rev: v0.2.0
   hooks:
   - id: black_nbconvert
 ```
