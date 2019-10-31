@@ -4,6 +4,7 @@
 __all__ = ["__version__", "BlackPreprocessor"]
 
 import os
+import re
 import sys
 from pathlib import Path
 
@@ -29,6 +30,9 @@ except DistributionNotFound:
 class BlackPreprocessor(Preprocessor):
     def __init__(self, *args, **kwargs):
         self.mode = FileMode(*args, **kwargs)
+        self.magic = "# BLACKNBCONVERT%BLACKNBCONVERT"
+        self.forward = re.compile("^%", flags=re.M)
+        self.reverse = re.compile("^{0}".format(self.magic), flags=re.M)
         super(BlackPreprocessor, self).__init__()
 
     def preprocess(self, *args, **kwargs):
@@ -39,8 +43,11 @@ class BlackPreprocessor(Preprocessor):
         if cell.get("cell_type", None) == "code":
             src = cell.get("source", "")
             if len(src.strip()):
+                src_fmt = self.forward.sub(self.magic, src)
                 try:
-                    cell["source"] = format_str(src, mode=self.mode).strip()
+                    cell["source"] = self.reverse.sub(
+                        "%", format_str(src_fmt, mode=self.mode).strip()
+                    )
                 except InvalidInput:
                     pass
                 if src.strip()[-1] == ";":
