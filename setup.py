@@ -26,7 +26,7 @@ setup(
     py_modules=["black_nbconvert"],
     python_requires=">=3.6",
     zip_safe=False,
-    install_requires=["black", "nbconvert"],
+    install_requires=["black", "nbconvert", "toml"],
     classifiers=[
         "Development Status :: 4 - Beta",
         "Environment :: Console",
