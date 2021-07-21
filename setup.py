@@ -1,5 +1,6 @@
-from setuptools import setup
 import sys
+
+from setuptools import setup
 
 assert sys.version_info >= (3, 6, 0), "black_nbconvert requires Python 3.6+"
 from pathlib import Path  # noqa E402
