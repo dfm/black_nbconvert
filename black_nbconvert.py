@@ -27,7 +27,7 @@ from black import (
 from pkg_resources import get_distribution, DistributionNotFound
 
 try:
-    __version__ = get_distribution(__name__).version
+    __version__ = get_distribution("black_nbconvert").version
 except DistributionNotFound:
     __version__ = None
 
@@ -93,7 +93,9 @@ def format_some(filenames, **config):
         config = dict(new_config, **config)
 
     proc = BlackPreprocessor(
-        line_length=config.get("line_length", DEFAULT_LINE_LENGTH),
+        line_length=config.get(
+            "line-length", config.get("line_length", DEFAULT_LINE_LENGTH)
+        ),
         target_versions=set(config.get("target_version", [])),
         string_normalization=not config.get(
             "skip_string_normalization", False
