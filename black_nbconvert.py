@@ -8,7 +8,12 @@ import re
 import sys
 from pathlib import Path
 
-import toml
+try:
+    import tomli
+except ImportError:
+    tomli = None
+    import toml
+
 import nbformat
 from nbconvert.preprocessors import Preprocessor
 from black import (
@@ -25,6 +30,13 @@ try:
     __version__ = get_distribution(__name__).version
 except DistributionNotFound:
     __version__ = None
+
+
+def load_toml(path):
+    if tomli is None:
+        return toml.load(str(path))
+    with open(path, encoding="utf8") as f:
+        return tomli.load(f)
 
 
 class BlackPreprocessor(Preprocessor):
@@ -76,8 +88,7 @@ def format_some(filenames, **config):
     root = find_project_root(filenames)
     path = root / "pyproject.toml"
     if path.is_file():
-        value = str(path)
-        pyproject_toml = toml.load(value)
+        pyproject_toml = load_toml(path)
         new_config = pyproject_toml.get("tool", {}).get("black", {})
         config = dict(new_config, **config)
 
