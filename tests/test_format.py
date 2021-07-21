@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from pathlib import Path
-import subprocess as sp
-import shutil
 import json
+import shutil
+import subprocess as sp
+from pathlib import Path
 
 
 def get_temp_path(subdir=""):

@@ -15,16 +15,15 @@ except ImportError:
     import toml
 
 import nbformat
-from nbconvert.preprocessors import Preprocessor
 from black import (
-    find_project_root,
-    FileMode,
-    format_str,
-    InvalidInput,
     DEFAULT_LINE_LENGTH,
+    FileMode,
+    InvalidInput,
+    find_project_root,
+    format_str,
 )
-
-from pkg_resources import get_distribution, DistributionNotFound
+from nbconvert.preprocessors import Preprocessor
+from pkg_resources import DistributionNotFound, get_distribution
 
 try:
     __version__ = get_distribution("black_nbconvert").version
@@ -97,9 +96,7 @@ def format_some(filenames, **config):
             "line-length", config.get("line_length", DEFAULT_LINE_LENGTH)
         ),
         target_versions=set(config.get("target_version", [])),
-        string_normalization=not config.get(
-            "skip_string_normalization", False
-        ),
+        string_normalization=not config.get("skip_string_normalization", False),
     )
 
     count = 0
@@ -116,15 +113,11 @@ def format_some(filenames, **config):
 
 
 def main():
-    import re
     import argparse
+    import re
 
-    parser = argparse.ArgumentParser(
-        description="Format Jupyter notebooks using black"
-    )
-    parser.add_argument(
-        "filenames", nargs="+", help="files or directories to format"
-    )
+    parser = argparse.ArgumentParser(description="Format Jupyter notebooks using black")
+    parser.add_argument("filenames", nargs="+", help="files or directories to format")
     parser.add_argument(
         "--check",
         action="store_true",

@@ -44,7 +44,7 @@ Use [pre-commit](https://pre-commit.com/).
 Once you [have it installed](https://pre-commit.com/#install), add this to the `.pre-commit-config.yaml` in your repository:
 
 ```yaml
-repos:        
+repos:
 - repo: https://github.com/dfm/black_nbconvert
   rev: stable
   hooks:
