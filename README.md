@@ -1,3 +1,18 @@
+# black natively supports Jupyter notebooks
+
+**This project is no longer necessary!**
+
+To replace your `black_nbconvert` `pre-commit` configuration, use:
+
+```yaml
+  - repo: https://github.com/psf/black
+    rev: "22.1.0"
+    hooks:
+      - id: black-jupyter
+```
+
+If you're still using this project, the original README is below:
+
 # black + nbconvert
 
 Tired of having to *think* about formatting in Jupyter notebooks?
