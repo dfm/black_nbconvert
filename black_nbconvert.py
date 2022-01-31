@@ -19,8 +19,9 @@ from black import (
     DEFAULT_LINE_LENGTH,
     FileMode,
     InvalidInput,
-    find_project_root,
+    find_pyproject_toml,
     format_str,
+    parse_pyproject_toml,
 )
 from nbconvert.preprocessors import Preprocessor
 from pkg_resources import DistributionNotFound, get_distribution
@@ -84,11 +85,10 @@ def format_one(proc, filename, check=False):
 
 def format_some(filenames, **config):
     check = config.get("check", False)
-    root = find_project_root(filenames)
-    path = root / "pyproject.toml"
-    if path.is_file():
-        pyproject_toml = load_toml(path)
-        new_config = pyproject_toml.get("tool", {}).get("black", {})
+
+    toml = find_pyproject_toml(filenames)
+    if toml is not None:
+        new_config = parse_pyproject_toml(toml)
         config = dict(new_config, **config)
 
     proc = BlackPreprocessor(
